@@ -1,26 +1,170 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --font-playfair: 'Playfair Display', Georgia, serif;
+    --font-dm-sans: 'DM Sans', system-ui, sans-serif;
+    --font-dm-mono: 'DM Mono', monospace;
+    --bg-body: #f0ece4;
+    --bg-card: #faf8f5;
+    --text-main: #1a1714;
+    --text-muted: #3d3830;
+    --text-faint: #b0a898;
+    --border-color: #d4c9b0;
+    --border-faint: #e8e0d0;
+    --accent: #c2452d;
+
+    --bg-range-mid: #ede9e2;
+    --bg-hover: #e8e0d0;
+
+    --ring-base: #c8bfaf;
+    --ring-inner: #8a7d6e;
+
+    --bg-input: #f4f0e8;
+    --border-input: #d4c9b0;
+    --bg-input-focus: #faf8f5;
+    --border-input-focus: #7a7060;
+    --note-bg: #f4f0e8;
+    --note-border: #d4c9b0;
+
+    --shadow-calendar: 0 12px 60px -8px rgba(26,23,20,0.22), 0 4px 20px -4px rgba(26,23,20,0.10), 0 0 0 1px rgba(26,23,20,0.06);
+    --gradient-curl: linear-gradient(135deg, transparent 50%, rgba(26,23,20,0.06) 50%);
+  }
+  .dark {
+    --bg-body: #1c1917;
+    --bg-card: #292524;
+    --text-main: #f5f5f4;
+    --text-muted: #d6d3d1;
+    --text-faint: #78716c;
+    --border-color: #57534e;
+    --border-faint: #44403c;
+    --accent: #e16650;
+
+    --bg-range-mid: #44403c;
+    --bg-hover: #57534e;
+
+    --ring-base: #44403c;
+    --ring-inner: #1c1917;
+
+    --bg-input: #1c1917;
+    --border-input: #57534e;
+    --bg-input-focus: #292524;
+    --border-input-focus: #a8a29e;
+    --note-bg: #1c1917;
+    --note-border: #57534e;
+
+    --shadow-calendar: 0 12px 60px -8px rgba(0,0,0,0.6), 0 4px 20px -4px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+    --gradient-curl: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.06) 50%);
   }
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  font-family: var(--font-dm-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.ring-hole {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ring-base);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.25), 0 1px 2px rgba(255,255,255,0.2);
+  position: relative;
+}
+
+.ring-hole::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--ring-inner);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.paper-texture {
+  position: relative;
+}
+
+.paper-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+  opacity: 0.8;
+}
+
+.ruled-lines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent calc(1.75rem - 1px),
+    var(--border-color) calc(1.75rem - 1px),
+    var(--border-color) 1.75rem
+  );
+  background-size: 100% 1.75rem;
+}
+
+.day-cell {
+  transition: all 0.15s ease;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.day-cell:hover .day-number {
+  transform: scale(1.1);
+}
+
+.month-grid {
+  animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-gradient {
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0,0,0,0.7) 100%
+  );
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
 }
